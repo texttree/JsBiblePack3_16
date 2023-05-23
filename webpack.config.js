@@ -10,6 +10,12 @@ module.exports = {
     filename: "[name].[contenthash].js",
     path: path.resolve(__dirname, "dist"),
   },
+  resolve: {
+    extensions: [".js", ".json"],
+    alias: {
+      "@": path.resolve(__dirname, "src"),
+    },
+  },
   plugins: [
     new HTMLWebPackPlugin({
       template: "./index.html",
@@ -24,6 +30,10 @@ module.exports = {
       },
       {
         test: /\.(png|jpg|svg|gif)$/,
+        use: ["file-loader"],
+      },
+      {
+        test: /\.(ttf|woff|woff2|eot)$/,
         use: ["file-loader"],
       },
     ],
