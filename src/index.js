@@ -1,10 +1,21 @@
-const i = 1;
-const j = 1;
-console.log(i + j);
-
 import "./styles/styles.css";
-import json from "./assets/json";
-import WebPackLogo from "./assets/webpack-logo.png";
-import * as $ from "jquery";
 
-console.log("JSON", json);
+window.addEventListener("DOMContentLoaded", () => {
+  const download = document.querySelector(".download");
+  download.addEventListener("click", () => {
+    const link = document.createElement("a");
+    const zipLink =
+      "https://app.thedigitalbiblelibrary.org/entry/download_archive?id=f6c04124034a114e&license=30235&revision=1&type=release";
+    const zipName = "test.zip";
+
+    link.setAttribute("href", zipLink);
+    link.setAttribute("download", zipName);
+    link.setAttribute("target", "_blank");
+
+    link.style.display = "none";
+
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  });
+});
