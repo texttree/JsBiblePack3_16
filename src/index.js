@@ -15,7 +15,6 @@ const KEY = "e9b2ca6a1b0abfc5c63fcda18a3036df";
 const PAID = "9879dbb7cfe39e4d";
 const revision = "01";
 const bibleVersion = `${PAID}-${revision}`;
-// const range = "GEN.1-GEN.8";
 let countVerse = 0;
 let initStartRange = false;
 const contentArray = new Array();
@@ -43,20 +42,17 @@ window.addEventListener("DOMContentLoaded", () => {
     });
   }
   async function fillContent() {
-    // console.log(arrayChapters.length);
-
-    // fillContent();
-
     let startRange;
     let finishRange;
 
     for (let index = 0; index < arrayChapters.length; index++) {
       let item = arrayChapters[index];
-      // const element = arrayChapters[index];
-      // console.log(element.chapterId);
+
+      //Формирование content начинаем с GEN.intro
       if (item.chapterId.includes("intro") & (index === 0)) {
         await fillIntroContent(item.chapterId);
       } else {
+        //Проверяем или был инициализирован стартовый адрес диапазона
         if (!initStartRange) {
           if (item.chapterId.includes("intro")) {
             index--;
@@ -66,6 +62,7 @@ window.addEventListener("DOMContentLoaded", () => {
           initStartRange = true;
         }
         countVerse += item.countVerse;
+        //Контролируем, чтобы количество стихов в запросе не превышало 200
         if (countVerse >= 200) {
           index--;
           item = arrayChapters[index];
@@ -74,11 +71,11 @@ window.addEventListener("DOMContentLoaded", () => {
             item = arrayChapters[index];
           }
           finishRange = item.chapterId;
-          // console.log(startRange, finishRange);
           initStartRange = false;
           countVerse = 0;
           await fillChapterContent(startRange, finishRange);
         }
+        //Последний стих Библии всегда финишный диапазон запроса
         if (index === arrayChapters.length - 1) {
           item = arrayChapters[index];
           finishRange = item.chapterId;
@@ -87,33 +84,7 @@ window.addEventListener("DOMContentLoaded", () => {
           await fillChapterContent(startRange, finishRange);
         }
       }
-      // console.log(contentAll.length);
-
-      // if (index % 8 === 1) {
-      //   arrayStartRange.push(element);
-      // } else if (index % 8 === 0) {
-      //   arrayFinishRange.push(element);
-      // }
     }
-    // console.log(arrayStartRange);
-    // console.log(arrayFinishRange);
-
-    // console.log(contentArray);
-
-    // saveText();
-
-    // let data = await getDataVerse(arrayChapters.at(1), arrayChapters.at(8));
-
-    // contentAll += data.data.content;
-    // console.log(contentAll);
-    // arrayChapters.forEach(function (element) {
-    //   if (index % 7 === 0) {
-    //     console.log(element);
-    //   }
-
-    //   index++;
-    // });
-    // console.log(arrayChapters.length);
     console.log(contentArray);
   }
 
@@ -223,7 +194,6 @@ async function fillAllChaptersVerses() {
 
   for (const item of arrayChapters) {
     const dataVerse = await getAllVerses(item);
-    // console.log("qa", dataVerse.data.verseCount);
     arrAllChaptersVerses.push({
       chapterId: item,
       countVerse: dataVerse.data.verseCount,
