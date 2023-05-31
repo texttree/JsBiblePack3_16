@@ -5,7 +5,7 @@
     "file-loader": "^6.2.0",
     "html-webpack-plugin": "^5.5.1",
     "style-loader": "^3.3.3",
-    "webpack": "^5.84.1",
+    "webpack": "^5.83.1",
     "webpack-cli": "^5.1.1"
   },
   "name": "jsbiblepack",
