@@ -1,6 +1,6 @@
 import "./styles/styles.css";
 import { arrayChapters } from "./allChapters";
-const KEY = "a56235aea43578c028134b352ee1daee";
+const KEY = "e9b2ca6a1b0abfc5c63fcda18a3036df";
 
 // const arrayChapters = require('./allChapters)
 // const URL = "https://api.scripture.api.bible/v1/bibles";
@@ -16,42 +16,96 @@ const PAID = "9879dbb7cfe39e4d";
 const revision = "01";
 const bibleVersion = `${PAID}-${revision}`;
 // const range = "GEN.1-GEN.8";
-let contentAll = "";
+let countVerse = 0;
+let initStartRange = false;
+const contentArray = new Array();
 
 window.addEventListener("DOMContentLoaded", () => {
   // const urlSrc = document.querySelector("#url-src");
   const download = document.querySelector(".download");
   download.addEventListener("click", function () {
+    fillContent();
+  });
+
+  async function fillIntroContent(chapterId) {
+    const value = await getIntroContent(chapterId);
+    contentArray.push({ chapterId: chapterId, content: value });
+  }
+
+  async function fillChapterContent(startRange, finishRange) {
+    initStartRange = false;
+    const value = await getDataVerse(startRange, finishRange);
+    const contentVerse = value.data.content;
+    const id = value.data.id;
+    contentArray.push({
+      chapterId: id,
+      content: contentVerse,
+    });
+  }
+  async function fillContent() {
     // console.log(arrayChapters.length);
 
     // fillContent();
 
-    let arrayStartRange = new Array();
-    let arrayFinishRange = new Array();
-    for (let index = 1; index < arrayChapters.length; index++) {
-      const element = arrayChapters[index];
-      if (element.includes("intro")) {
-        //забрать отдельно intro
-        continue;
-      }
+    let startRange;
+    let finishRange;
 
-      if (index % 8 === 1) {
-        arrayStartRange.push(element);
-      } else if (index % 8 === 0) {
-        arrayFinishRange.push(element);
+    for (let index = 0; index < arrayChapters.length; index++) {
+      let item = arrayChapters[index];
+      // const element = arrayChapters[index];
+      // console.log(element.chapterId);
+      if (item.chapterId.includes("intro") & (index === 0)) {
+        await fillIntroContent(item.chapterId);
+      } else {
+        if (!initStartRange) {
+          if (item.chapterId.includes("intro")) {
+            index--;
+            item = arrayChapters[index];
+          }
+          startRange = item.chapterId;
+          initStartRange = true;
+        }
+        countVerse += item.countVerse;
+        if (countVerse >= 200) {
+          index--;
+          item = arrayChapters[index];
+          if (item.chapterId.includes("intro")) {
+            index--;
+            item = arrayChapters[index];
+          }
+          finishRange = item.chapterId;
+          // console.log(startRange, finishRange);
+          initStartRange = false;
+          countVerse = 0;
+          await fillChapterContent(startRange, finishRange);
+        }
+        if (index === arrayChapters.length - 1) {
+          item = arrayChapters[index];
+          finishRange = item.chapterId;
+          initStartRange = false;
+          countVerse = 0;
+          await fillChapterContent(startRange, finishRange);
+        }
       }
+      // console.log(contentAll.length);
+
+      // if (index % 8 === 1) {
+      //   arrayStartRange.push(element);
+      // } else if (index % 8 === 0) {
+      //   arrayFinishRange.push(element);
+      // }
     }
-    console.log(arrayStartRange);
-    console.log(arrayFinishRange);
+    // console.log(arrayStartRange);
+    // console.log(arrayFinishRange);
+
+    // console.log(contentArray);
 
     // saveText();
-  });
 
-  async function fillContent() {
     // let data = await getDataVerse(arrayChapters.at(1), arrayChapters.at(8));
 
-    contentAll += data.data.content;
-    console.log(contentAll);
+    // contentAll += data.data.content;
+    // console.log(contentAll);
     // arrayChapters.forEach(function (element) {
     //   if (index % 7 === 0) {
     //     console.log(element);
@@ -60,6 +114,7 @@ window.addEventListener("DOMContentLoaded", () => {
     //   index++;
     // });
     // console.log(arrayChapters.length);
+    console.log(contentArray);
   }
 
   async function getDataVerse(startRange, finishRange) {
@@ -168,13 +223,18 @@ async function fillAllChaptersVerses() {
 
   for (const item of arrayChapters) {
     const dataVerse = await getAllVerses(item);
-    console.log("qa", dataVerse.data.verseCount);
+    // console.log("qa", dataVerse.data.verseCount);
     arrAllChaptersVerses.push({
       chapterId: item,
       countVerse: dataVerse.data.verseCount,
     });
   }
   return arrAllChaptersVerses;
+}
+
+async function getIntroContent(chapterId) {
+  const dataVerse = await getAllVerses(chapterId);
+  return dataVerse.data.content;
 }
 
 function sleep(ms) {
