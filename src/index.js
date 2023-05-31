@@ -19,54 +19,101 @@ window.addEventListener("DOMContentLoaded", () => {
   // const urlSrc = document.querySelector("#url-src");
   const download = document.querySelector(".download");
   download.addEventListener("click", function () {
-    console.log(21);
     fillContent();
   });
 
   async function fillContent() {
-    contentAll += await getData();
-    console.log(28);
+    let data = await getDataVerse();
 
-    // contentAll += content;
-    console.log(contentAll);
+    contentAll += data.data.content;
+    console.log(contentAll.length);
   }
 
-  async function getData() {
+  async function getDataVerse() {
     const URL = `https://api.scripture.api.bible/v1/bibles/${bibleVersion}/passages/${range}?content-type=html&include-notes=false&include-titles=true&include-chapter-numbers=false&include-verse-numbers=true&include-verse-spans=false&use-org-id=false`;
-    fetch(URL, {
+
+    try {
+      let response = await fetch(URL, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          "API-Key": KEY,
+        },
+      });
+      let data = await response.json();
+      return data;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+});
+
+async function getAllChapters(book) {
+  const URL = `https://api.scripture.api.bible/v1/bibles/9879dbb7cfe39e4d-01/books/${book}/chapters`;
+
+  try {
+    let response = await fetch(URL, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
         "API-Key": KEY,
       },
-    })
-      .then((response) => response.json())
-      .then(function (data) {
-        console.log(46);
-        return data;
-      });
+    });
+    let data = await response.json();
+    return data;
+  } catch (error) {
+    console.log(error);
   }
+}
 
-  // if (response.ok) { // если HTTP-статус в диапазоне 200-299
-  //   // получаем тело ответа (см. про этот метод ниже)
-  //   let json = await response.json();
-  // } else {
-  //   alert("Ошибка HTTP: " + response.status);
-  // }
+async function getBooks() {
+  const URL =
+    "https://api.scripture.api.bible/v1/bibles/9879dbb7cfe39e4d-01/books";
 
-  // const link = document.createElement("a");
-  // const zipLink =
-  //   "https://app.thedigitalbiblelibrary.org/entry/download_archive?id=d8bb452293f21682&license=30235&revision=1&type=release";
-  // const zipName = "test.zip";
+  try {
+    let response = await fetch(URL, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        "API-Key": KEY,
+      },
+    });
+    let data = await response.json();
+    return data;
+  } catch (error) {
+    console.log(error);
+  }
+}
 
-  // link.setAttribute("href", zipLink);
-  // link.setAttribute("download", zipName);
-  // link.setAttribute("target", "_blank");
+async function fillBooks() {
+  const data = await getBooks();
+  const arrayBooks = new Array();
 
-  // link.style.display = "none";
+  data.data.forEach((element) => arrayBooks.push(element.id));
+  return arrayBooks;
+}
 
-  // document.body.appendChild(link);
-  // link.click();
-  // document.body.removeChild(link);
-  // });
-});
+async function fillChapters() {
+  const arrayChapters = new Array();
+  const arrayBooks = await fillBooks();
+  console.log(arrayBooks);
+
+  arrayBooks.forEach(function (element) {
+    getAllChapters(element).then(function (data) {
+      sleep(500);
+      const arrayChapter = data.data;
+      arrayChapter.forEach(function (element) {
+        if (element.number !== "intro") {
+          arrayChapters.push(element.id);
+        }
+      });
+    });
+  });
+  return arrayChapters;
+}
+
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+fillChapters().then((data) => console.log(data));
