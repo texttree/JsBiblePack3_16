@@ -29,15 +29,11 @@ async function fillChapters() {
 }
 
 export async function fillBooks() {
-  console.log(32);
-
   const data = await getBooks();
   data.data.forEach((element) => bookArray.push(element.id));
 }
 
 async function getBooks() {
-  console.log(39);
-
   const URL = `https://api.scripture.api.bible/v1/bibles/${bibleVersion}/books`;
 
   try {
@@ -69,7 +65,6 @@ async function getAllChapters(book) {
     if (response.status === 200) {
       let data = await response.json();
       countQuery++;
-      console.log("countQuery", countQuery);
       progressBasStatus();
       return data;
     } else {
