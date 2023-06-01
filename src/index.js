@@ -23,7 +23,7 @@ window.addEventListener("DOMContentLoaded", () => {
   // const urlSrc = document.querySelector("#url-src");
   const download = document.querySelector(".download");
   download.addEventListener("click", function () {
-    fillContent();
+    fillContent().then(() => saveText(contentArray));
   });
 
   async function fillIntroContent(chapterId) {
@@ -42,8 +42,8 @@ window.addEventListener("DOMContentLoaded", () => {
     });
   }
   async function fillContent() {
-    let startRange;
-    let finishRange;
+    let startRange = "123";
+    let finishRange = "321";
 
     for (let index = 0; index < arrayChapters.length; index++) {
       let item = arrayChapters[index];
@@ -62,17 +62,21 @@ window.addEventListener("DOMContentLoaded", () => {
           initStartRange = true;
         }
         countVerse += item.countVerse;
+
         //Контролируем, чтобы количество стихов в запросе не превышало 200
         if (countVerse >= 200) {
           index--;
           item = arrayChapters[index];
+
           if (item.chapterId.includes("intro")) {
-            index--;
+            index -= 2;
             item = arrayChapters[index];
           }
+
           finishRange = item.chapterId;
           initStartRange = false;
           countVerse = 0;
+
           await fillChapterContent(startRange, finishRange);
         }
         //Последний стих Библии всегда финишный диапазон запроса
@@ -211,12 +215,14 @@ function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-function saveText() {
-  let stroka = "BlaBla Bla HHHmm";
-  let blob = new Blob([stroka], { type: "text/plain" });
+function saveText(arrayData) {
+  let text = "";
+  arrayData.forEach((element) => (text += JSON.stringify(element)));
+
+  let blob = new Blob([text], { type: "text/plain" });
   let link = document.createElement("a");
   link.setAttribute("href", URL.createObjectURL(blob));
-  link.setAttribute("download", "1.js");
+  link.setAttribute("download", `${bibleVersion}.js`);
   link.click();
 }
 
