@@ -1,6 +1,6 @@
 import "./styles/styles.css";
 import { arrayChapters } from "./allChapters";
-const KEY = "e9b2ca6a1b0abfc5c63fcda18a3036df";
+// const KEY = "e9b2ca6a1b0abfc5c63fcda18a3036df";
 
 // const arrayChapters = require('./allChapters)
 // const URL = "https://api.scripture.api.bible/v1/bibles";
@@ -12,17 +12,29 @@ const KEY = "e9b2ca6a1b0abfc5c63fcda18a3036df";
 // "https://api.scripture.api.bible/v1/bibles/9879dbb7cfe39e4d-01/books/GEN";
 // const URL = "https://api.scripture.api.bible/v1/bibles/9879dbb7cfe39e4d-01/books/GEN/chapters";
 
-const PAID = "9879dbb7cfe39e4d";
-const revision = "01";
-const bibleVersion = `${PAID}-${revision}`;
+// const PAID = "9879dbb7cfe39e4d";
+// const revision = "01";
+let key = "";
+let bibleVersion = ``;
+let typeContent = ``;
 let countVerse = 0;
 let initStartRange = false;
 const contentArray = new Array();
 
 window.addEventListener("DOMContentLoaded", () => {
-  // const urlSrc = document.querySelector("#url-src");
+  const keySrc = document.querySelector("#key-src");
+  const paiSrc = document.querySelector("#paid-src");
+  const revSrc = document.querySelector("#rev-src");
+  const contentSrc = document.querySelector("#content-src");
+
   const download = document.querySelector(".download");
   download.addEventListener("click", function () {
+    key = keySrc.value;
+    const paid = paiSrc.value;
+    const revision = revSrc.value;
+    typeContent = contentSrc.value;
+
+    bibleVersion = `${paid}-${revision}`;
     fillContent().then(() => saveText(contentArray));
   });
 
@@ -94,14 +106,14 @@ window.addEventListener("DOMContentLoaded", () => {
 
   async function getDataVerse(startRange, finishRange) {
     const range = `${startRange}-${finishRange}`;
-    const URL = `https://api.scripture.api.bible/v1/bibles/${bibleVersion}/passages/${range}?content-type=html&include-notes=false&include-titles=true&include-chapter-numbers=false&include-verse-numbers=true&include-verse-spans=false&use-org-id=false`;
+    const URL = `https://api.scripture.api.bible/v1/bibles/${bibleVersion}/passages/${range}?content-type=${typeContent}&include-notes=false&include-titles=true&include-chapter-numbers=false&include-verse-numbers=true&include-verse-spans=false&use-org-id=false`;
 
     try {
       let response = await fetch(URL, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          "API-Key": KEY,
+          "API-Key": key,
         },
       });
       let data = await response.json();
@@ -122,7 +134,7 @@ async function getAllChapters(book) {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        "API-Key": KEY,
+        "API-Key": key,
       },
     });
     let data = await response.json();
@@ -140,7 +152,7 @@ async function getAllVerses(chapterId) {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        "API-Key": KEY,
+        "API-Key": key,
       },
     });
     let data = await response.json();
@@ -159,7 +171,7 @@ async function getBooks() {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        "API-Key": KEY,
+        "API-Key": key,
       },
     });
     let data = await response.json();
