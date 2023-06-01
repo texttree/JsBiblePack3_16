@@ -1,42 +1,49 @@
 import "./styles/styles.css";
 import { arrayChapters } from "./allChapters";
-// const KEY = "e9b2ca6a1b0abfc5c63fcda18a3036df";
+import { fillBooks } from "./helper";
+import { bookArray } from "./helper";
 
-// const arrayChapters = require('./allChapters)
-// const URL = "https://api.scripture.api.bible/v1/bibles";
-// const URL = "https://api.scripture.api.bible/v1/bibles/GEN";
-// const URL = "https://api.scripture.api.bible/v1/bibles/9879dbb7cfe39e4d-01";
-// const URL =
-//   "https://api.scripture.api.bible/v1/bibles/9879dbb7cfe39e4d-01/books";
-// const URL =
-// "https://api.scripture.api.bible/v1/bibles/9879dbb7cfe39e4d-01/books/GEN";
-// const URL = "https://api.scripture.api.bible/v1/bibles/9879dbb7cfe39e4d-01/books/GEN/chapters";
+export let key = "";
+export let bibleVersion = ``;
 
-// const PAID = "9879dbb7cfe39e4d";
-// const revision = "01";
-let key = "";
-let bibleVersion = ``;
+let paid = "";
+let revision = "";
 let typeContent = ``;
+
 let countVerse = 0;
 let initStartRange = false;
+let statusSrc;
+
+let allQuery = 0;
+let countQuery = 0;
+
 const contentArray = new Array();
+const needBooks = new Array();
 
 window.addEventListener("DOMContentLoaded", () => {
   const keySrc = document.querySelector("#key-src");
   const paiSrc = document.querySelector("#paid-src");
   const revSrc = document.querySelector("#rev-src");
   const contentSrc = document.querySelector("#content-src");
+  statusSrc = document.querySelector("#status-src");
 
   const download = document.querySelector(".download");
   download.addEventListener("click", function () {
     key = keySrc.value;
-    const paid = paiSrc.value;
-    const revision = revSrc.value;
+    paid = paiSrc.value;
+    revision = revSrc.value;
     typeContent = contentSrc.value;
+    countQuery = 0;
 
     bibleVersion = `${paid}-${revision}`;
-    fillContent().then(() => saveText(contentArray));
+    fillGlobal();
   });
+
+  async function fillGlobal() {
+    await fillBooks();
+    fillNeedBooks();
+    await fillContent().then(() => saveText(contentArray));
+  }
 
   async function fillIntroContent(chapterId) {
     const value = await getIntroContent(chapterId);
@@ -56,9 +63,12 @@ window.addEventListener("DOMContentLoaded", () => {
   async function fillContent() {
     let startRange = "123";
     let finishRange = "321";
+    //учитываем запрос на intro
+    allQuery = needBooks.length - 1;
+    for (let index = 0; index < needBooks.length; index++) {
+      countQuery = index;
 
-    for (let index = 0; index < arrayChapters.length; index++) {
-      let item = arrayChapters[index];
+      let item = needBooks[index];
 
       //Формирование content начинаем с GEN.intro
       if (item.chapterId.includes("intro") & (index === 0)) {
@@ -68,7 +78,7 @@ window.addEventListener("DOMContentLoaded", () => {
         if (!initStartRange) {
           if (item.chapterId.includes("intro")) {
             index--;
-            item = arrayChapters[index];
+            item = needBooks[index];
           }
           startRange = item.chapterId;
           initStartRange = true;
@@ -78,11 +88,11 @@ window.addEventListener("DOMContentLoaded", () => {
         //Контролируем, чтобы количество стихов в запросе не превышало 200
         if (countVerse >= 200) {
           index--;
-          item = arrayChapters[index];
+          item = needBooks[index];
 
           if (item.chapterId.includes("intro")) {
             index -= 2;
-            item = arrayChapters[index];
+            item = needBooks[index];
           }
 
           finishRange = item.chapterId;
@@ -92,8 +102,8 @@ window.addEventListener("DOMContentLoaded", () => {
           await fillChapterContent(startRange, finishRange);
         }
         //Последний стих Библии всегда финишный диапазон запроса
-        if (index === arrayChapters.length - 1) {
-          item = arrayChapters[index];
+        if (index === needBooks.length - 1) {
+          item = needBooks[index];
           finishRange = item.chapterId;
           initStartRange = false;
           countVerse = 0;
@@ -101,7 +111,6 @@ window.addEventListener("DOMContentLoaded", () => {
         }
       }
     }
-    console.log(contentArray);
   }
 
   async function getDataVerse(startRange, finishRange) {
@@ -116,33 +125,18 @@ window.addEventListener("DOMContentLoaded", () => {
           "API-Key": key,
         },
       });
-      let data = await response.json();
-      return data;
+      if (response.status === 200) {
+        let data = await response.json();
+        progressBarStatus();
+        return data;
+      } else {
+        statusSrc.innerText = `STATUS: code:${response.status}, statusText:${response.statusText}`;
+      }
     } catch (error) {
-      console.log(error);
+      statusSrc.innerText = `STATUS: ${error}`;
     }
   }
 });
-
-// Вспомогательные функции
-//Список всех глав Библии
-async function getAllChapters(book) {
-  const URL = `https://api.scripture.api.bible/v1/bibles/9879dbb7cfe39e4d-01/books/${book}/chapters`;
-
-  try {
-    let response = await fetch(URL, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        "API-Key": key,
-      },
-    });
-    let data = await response.json();
-    return data;
-  } catch (error) {
-    console.log(error);
-  }
-}
 
 async function getAllVerses(chapterId) {
   const URL = `https://api.scripture.api.bible/v1/bibles/9879dbb7cfe39e4d-01/chapters/${chapterId}?content-type=html&include-notes=false&include-titles=true&include-chapter-numbers=false&include-verse-numbers=true&include-verse-spans=false`;
@@ -155,67 +149,17 @@ async function getAllVerses(chapterId) {
         "API-Key": key,
       },
     });
-    let data = await response.json();
-    return data;
+
+    if (response.status === 200) {
+      let data = await response.json();
+      progressBarStatus();
+      return data;
+    } else {
+      statusSrc.innerText = `STATUS: code:${response.status}, statusText:${response.statusText}`;
+    }
   } catch (error) {
-    console.log(error);
+    statusSrc.innerText = `STATUS: ${error}`;
   }
-}
-
-async function getBooks() {
-  const URL =
-    "https://api.scripture.api.bible/v1/bibles/9879dbb7cfe39e4d-01/books";
-
-  try {
-    let response = await fetch(URL, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        "API-Key": key,
-      },
-    });
-    let data = await response.json();
-    return data;
-  } catch (error) {
-    console.log(error);
-  }
-}
-
-async function fillBooks() {
-  const data = await getBooks();
-  const arrayBooks = new Array();
-
-  data.data.forEach((element) => arrayBooks.push(element.id));
-  return arrayBooks;
-}
-
-async function fillChapters() {
-  const arrChapters = new Array();
-  const arrayBooks = await fillBooks();
-
-  arrayBooks.forEach(function (element) {
-    getAllChapters(element).then(function (data) {
-      sleep(1000);
-      const arrayChapter = data.data;
-      arrayChapter.forEach(function (element) {
-        arrChapters.push(element.id);
-      });
-    });
-  });
-  return arrChapters;
-}
-
-async function fillAllChaptersVerses() {
-  const arrAllChaptersVerses = new Array();
-
-  for (const item of arrayChapters) {
-    const dataVerse = await getAllVerses(item);
-    arrAllChaptersVerses.push({
-      chapterId: item,
-      countVerse: dataVerse.data.verseCount,
-    });
-  }
-  return arrAllChaptersVerses;
 }
 
 async function getIntroContent(chapterId) {
@@ -223,11 +167,7 @@ async function getIntroContent(chapterId) {
   return dataVerse.data.content;
 }
 
-function sleep(ms) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
-function saveText(arrayData) {
+async function saveText(arrayData) {
   let text = "";
   arrayData.forEach((element) => (text += JSON.stringify(element)));
 
@@ -238,4 +178,15 @@ function saveText(arrayData) {
   link.click();
 }
 
-// fillAllChaptersVerses().then((data) => console.log("data", data));
+function progressBarStatus() {
+  const percentStatus = Math.round((countQuery / allQuery) * 100);
+  statusSrc.innerText = `STATUS: package formation: ${percentStatus}%`;
+}
+
+function fillNeedBooks() {
+  arrayChapters.forEach(function (element) {
+    if (bookArray.includes(element.bookId)) {
+      needBooks.push(element);
+    }
+  });
+}
