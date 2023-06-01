@@ -56,7 +56,7 @@ async function getBooks() {
 }
 
 async function getAllChapters(book) {
-  const URL = `https://api.scripture.api.bible/v1/bibles/9879dbb7cfe39e4d-01/books/${book}/chapters`;
+  const URL = `https://api.scripture.api.bible/v1/bibles/${bibleVersion}/books/${book}/chapters`;
 
   try {
     let response = await fetch(URL, {
