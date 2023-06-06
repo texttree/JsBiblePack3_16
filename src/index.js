@@ -1,7 +1,6 @@
 import "./styles/styles.css";
 import { arrayChapters } from "./allChapters";
-import { fillBooks } from "./helper";
-import { bookArray } from "./helper";
+import { fillBooks, bookArray } from "./helper";
 
 export let key = "";
 export let bibleVersion = ``;
@@ -17,8 +16,8 @@ let statusSrc;
 let allQuery = 0;
 let countQuery = 0;
 
-const contentArray = new Array();
-const needBooks = new Array();
+const contentArray = [];
+const needBooks = [];
 
 window.addEventListener("DOMContentLoaded", () => {
   const keySrc = document.querySelector("#key-src");

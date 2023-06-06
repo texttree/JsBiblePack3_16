@@ -9,25 +9,25 @@
 </head>
 
 <body>
-  <div class="test">
+  <div class="main">
     <h1>Bible Pack Downloader</h1>
   </div>
 
   <div class="input-data">
     <div class="api-key input">
-      <label for="name"> Enter API-key:</label>
-      <input type="password" id="key-src" placeholder="qwerty1234567">
+      <label for="key-src"> Enter API-key:</label>
+      <input type="text" id="key-src" placeholder="qwerty1234567">
     </div>
     <div class="paid input">
-      <label for="name"> Enter PAID:</label>
+      <label for="paid-src"> Enter PAID:</label>
       <input type="text" id="paid-src" placeholder="9879dbb7cfe39e4d">
     </div>
     <div class="rev input">
-      <label for="name"> Enter revesion:</label>
+      <label for="rev-src"> Enter revision:</label>
       <input type="text" id="rev-src" placeholder="01">
     </div>
     <div class="text-content input">
-      <label for="name"> Select text-content:</label>
+      <label for="content-src"> Select text-content:</label>
       <select id="content-src">
         <option value="html">html</option>
         <option value="json">json</option>
@@ -36,7 +36,7 @@
     </div>
   </div>
   <div class="download">
-    <button>Download Package</button>
+    Download Package
   </div>
   <span class="label status" id="status-src">STATUS:</span>
 
