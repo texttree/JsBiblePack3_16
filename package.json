@@ -11,7 +11,6 @@
   "name": "jsbiblepack",
   "description": "This is a tool for downloading various Bible translations.",
   "version": "1.0.0",
-  "main": "index.js",
   "dependencies": {
     "acorn": "^8.8.2",
     "acorn-import-assertions": "^1.9.0",
