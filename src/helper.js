@@ -1,8 +1,8 @@
 import { key, bibleVersion } from "./index";
-export const bookArray = new Array();
+export const bookArray = [];
 
 async function fillAllChaptersVerses() {
-  const arrAllChaptersVerses = new Array();
+  const arrAllChaptersVerses = [];
 
   for (const item of arrayChapters) {
     const dataVerse = await getAllVerses(item);
@@ -15,7 +15,7 @@ async function fillAllChaptersVerses() {
 }
 
 async function fillChapters() {
-  const arrChapters = new Array();
+  const arrChapters = [];
 
   bookArray.forEach(function (element) {
     getAllChapters(element).then(function (data) {
@@ -59,7 +59,7 @@ async function getAllChapters(book) {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        "API-Key": key.value,
+        "API-Key": key,
       },
     });
     if (response.status === 200) {
