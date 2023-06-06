@@ -1,0 +1,33 @@
+{
+  "devDependencies": {
+    "clean-webpack-plugin": "^4.0.0",
+    "css-loader": "^6.7.4",
+    "file-loader": "^6.2.0",
+    "html-webpack-plugin": "^5.5.1",
+    "style-loader": "^3.3.3",
+    "webpack": "^5.83.1",
+    "webpack-cli": "^5.1.1"
+  },
+  "name": "jsbiblepack",
+  "description": "This is a tool for downloading various Bible translations.",
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "webpack --mode development",
+    "build": "webpack --mode production",
+    "watch": "webpack --mode development --watch"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tt-dev-23/JsBiblePack.git"
+  },
+  "keywords": [
+    "js",
+    "bible"
+  ],
+  "author": "DenisArger <den.arger@gmail.com>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/tt-dev-23/JsBiblePack/issues"
+  },
+  "homepage": "https://github.com/tt-dev-23/JsBiblePack#readme"
+}
