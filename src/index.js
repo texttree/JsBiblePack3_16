@@ -1,7 +1,6 @@
 import "./styles/styles.css";
 import { arrayChapters } from "./allChapters";
-import { fillBooks } from "./helper";
-import { bookArray } from "./helper";
+import { fillBooks, bookArray } from "./helper";
 
 export let key = "";
 export let bibleVersion = ``;
