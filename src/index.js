@@ -16,8 +16,8 @@ let statusSrc;
 let allQuery = 0;
 let countQuery = 0;
 
-const contentArray = new Array();
-const needBooks = new Array();
+const contentArray = [];
+const needBooks = [];
 
 window.addEventListener("DOMContentLoaded", () => {
   const keySrc = document.querySelector("#key-src");
