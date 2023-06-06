@@ -1,17 +1,20 @@
+html {
+  font-family: 'Roboto', sans-serif;
+}
+
+body {
+  width: 90%;
+  margin: auto;
+}
+
 h1 {
   color: rgba(58, 48, 141, 0.9);
-  font-family: 'Roboto', sans-serif;
   text-align: center;
 }
 
 .input-data {
   display: flex;
-  margin-left: 5%;
   justify-content: center
-}
-
-label {
-  font-family: 'Roboto', sans-serif;
 }
 
 select {
@@ -23,8 +26,6 @@ select {
   padding: 8px;
   box-sizing: border-box;
   transition: .3s;
-  font-family: 'Roboto', sans-serif;
-
 }
 
 input {
@@ -36,8 +37,6 @@ input {
   padding: 8px;
   box-sizing: border-box;
   transition: .3s;
-  font-family: 'Roboto', sans-serif;
-
 }
 
 
@@ -57,9 +56,6 @@ button {
   box-sizing: border-box;
   transition: .3s;
   background-color: rgb(207, 207, 238);
-  font-family: 'Roboto', sans-serif;
-
-
 }
 
 button:focus {
@@ -77,13 +73,8 @@ button:focus {
   box-sizing: border-box;
   transition: .3s;
   background-color: rgb(207, 207, 238);
-  font-family: 'Roboto', sans-serif;
-
 }
 
 .status {
   background-color: #b6cfe4;
 }
-
-
-@import "~normalize.css"
