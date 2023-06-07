@@ -1,4 +1,7 @@
 import "./styles/styles.css";
+
+import { NeedBible } from "./NeedBible";
+
 import { arrayChapters } from "./allChapters";
 import { fillBooks, bookArray } from "./helper";
 
@@ -33,111 +36,112 @@ window.addEventListener("DOMContentLoaded", () => {
     revision = revSrc.value;
     typeContent = contentSrc.value;
     countQuery = 0;
-
     bibleVersion = `${paid}-${revision}`;
-    fillGlobal();
+
+    const needBible = new NeedBible(key, bibleVersion, typeContent, statusSrc);
+    needBible.fillGlobal();
   });
 
-  async function fillGlobal() {
-    await fillBooks();
-    fillNeedBooks();
-    await fillContent().then(() => saveText(contentArray));
-  }
+  // async function fillGlobal() {
+  //   await fillBooks();
+  //   fillNeedBooks();
+  //   await fillContent().then(() => saveText(contentArray));
+  // }
 
-  async function fillIntroContent(chapterId) {
-    const value = await getIntroContent(chapterId);
-    contentArray.push({ chapterId: chapterId, content: value });
-  }
+  // async function fillIntroContent(chapterId) {
+  //   const value = await getIntroContent(chapterId);
+  //   contentArray.push({ chapterId: chapterId, content: value });
+  // }
 
-  async function fillChapterContent(startRange, finishRange) {
-    initStartRange = false;
-    const value = await getDataVerse(startRange, finishRange);
-    const contentVerse = value.data.content;
-    const id = value.data.id;
-    contentArray.push({
-      chapterId: id,
-      content: contentVerse,
-    });
-  }
-  async function fillContent() {
-    let startRange = "123";
-    let finishRange = "321";
-    //учитываем запрос на intro
-    allQuery = needBooks.length - 1;
-    for (let index = 0; index < needBooks.length; index++) {
-      countQuery = index;
+  // async function fillChapterContent(startRange, finishRange) {
+  //   initStartRange = false;
+  //   const value = await getDataVerse(startRange, finishRange);
+  //   const contentVerse = value.data.content;
+  //   const id = value.data.id;
+  //   contentArray.push({
+  //     chapterId: id,
+  //     content: contentVerse,
+  //   });
+  // }
+  // async function fillContent() {
+  //   let startRange = "123";
+  //   let finishRange = "321";
+  //   //учитываем запрос на intro
+  //   allQuery = needBooks.length - 1;
+  //   for (let index = 0; index < needBooks.length; index++) {
+  //     countQuery = index;
 
-      let item = needBooks[index];
+  //     let item = needBooks[index];
 
-      //Формирование content начинаем с GEN.intro
-      if (item.chapterId.includes("intro") & (index === 0)) {
-        await fillIntroContent(item.chapterId);
-      } else {
-        //Проверяем или был инициализирован стартовый адрес диапазона
-        if (!initStartRange) {
-          if (item.chapterId.includes("intro")) {
-            index--;
-            item = needBooks[index];
-          }
-          startRange = item.chapterId;
-          initStartRange = true;
-        }
-        countVerse += item.countVerse;
+  //     //Формирование content начинаем с GEN.intro
+  //     if (item.chapterId.includes("intro") & (index === 0)) {
+  //       await fillIntroContent(item.chapterId);
+  //     } else {
+  //       //Проверяем или был инициализирован стартовый адрес диапазона
+  //       if (!initStartRange) {
+  //         if (item.chapterId.includes("intro")) {
+  //           index--;
+  //           item = needBooks[index];
+  //         }
+  //         startRange = item.chapterId;
+  //         initStartRange = true;
+  //       }
+  //       countVerse += item.countVerse;
 
-        //Контролируем, чтобы количество стихов в запросе не превышало 200
-        if (countVerse >= 200) {
-          index--;
-          item = needBooks[index];
+  //       //Контролируем, чтобы количество стихов в запросе не превышало 200
+  //       if (countVerse >= 200) {
+  //         index--;
+  //         item = needBooks[index];
 
-          if (item.chapterId.includes("intro")) {
-            index -= 2;
-            item = needBooks[index];
-          }
+  //         if (item.chapterId.includes("intro")) {
+  //           index -= 2;
+  //           item = needBooks[index];
+  //         }
 
-          finishRange = item.chapterId;
-          initStartRange = false;
-          countVerse = 0;
+  //         finishRange = item.chapterId;
+  //         initStartRange = false;
+  //         countVerse = 0;
 
-          await fillChapterContent(startRange, finishRange);
-        }
-        //Последний стих Библии всегда финишный диапазон запроса
-        if (index === needBooks.length - 1) {
-          item = needBooks[index];
-          finishRange = item.chapterId;
-          initStartRange = false;
-          countVerse = 0;
-          await fillChapterContent(startRange, finishRange);
-        }
-      }
-    }
-  }
+  //         await fillChapterContent(startRange, finishRange);
+  //       }
+  //       //Последний стих Библии всегда финишный диапазон запроса
+  //       if (index === needBooks.length - 1) {
+  //         item = needBooks[index];
+  //         finishRange = item.chapterId;
+  //         initStartRange = false;
+  //         countVerse = 0;
+  //         await fillChapterContent(startRange, finishRange);
+  //       }
+  //     }
+  //   }
+  // }
 
-  async function getDataVerse(startRange, finishRange) {
-    const range = `${startRange}-${finishRange}`;
-    const URL = `https://api.scripture.api.bible/v1/bibles/${bibleVersion}/passages/${range}?content-type=${typeContent}&include-notes=false&include-titles=true&include-chapter-numbers=false&include-verse-numbers=true&include-verse-spans=false&use-org-id=false`;
+  // async function getDataVerse(startRange, finishRange) {
+  //   const range = `${startRange}-${finishRange}`;
+  //   const URL = `https://api.scripture.api.bible/v1/bibles/${bibleVersion}/passages/${range}?content-type=${typeContent}&include-notes=false&include-titles=true&include-chapter-numbers=false&include-verse-numbers=true&include-verse-spans=false&use-org-id=false`;
 
-    try {
-      let response = await fetch(URL, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          "API-Key": key,
-        },
-      });
-      if (response.status === 200) {
-        let data = await response.json();
-        progressBarStatus();
-        return data;
-      } else {
-        statusSrc.innerText = `STATUS: code:${response.status}, statusText:${response.statusText}`;
-      }
-    } catch (error) {
-      statusSrc.innerText = `STATUS: ${error}`;
-    }
-  }
+  //   try {
+  //     let response = await fetch(URL, {
+  //       method: "GET",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //         "API-Key": key,
+  //       },
+  //     });
+  //     if (response.status === 200) {
+  //       let data = await response.json();
+  //       progressBarStatus();
+  //       return data;
+  //     } else {
+  //       statusSrc.innerText = `STATUS: code:${response.status}, statusText:${response.statusText}`;
+  //     }
+  //   } catch (error) {
+  //     statusSrc.innerText = `STATUS: ${error}`;
+  //   }
+  // }
 });
 
-async function getAllVerses(chapterId) {
+/*async function getAllVerses(chapterId) {
   const URL = `https://api.scripture.api.bible/v1/bibles/9879dbb7cfe39e4d-01/chapters/${chapterId}?content-type=html&include-notes=false&include-titles=true&include-chapter-numbers=false&include-verse-numbers=true&include-verse-spans=false`;
 
   try {
@@ -188,4 +192,4 @@ function fillNeedBooks() {
       needBooks.push(element);
     }
   });
-}
+}*/

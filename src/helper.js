@@ -31,6 +31,7 @@ async function fillChapters() {
 export async function fillBooks() {
   const data = await getBooks();
   data.data.forEach((element) => bookArray.push(element.id));
+  console.log("123", bookArray);
 }
 
 async function getBooks() {
@@ -47,7 +48,7 @@ async function getBooks() {
     let data = await response.json();
     return data;
   } catch (error) {
-    console.log(error);
+    console.log(51, error);
   }
 }
 
