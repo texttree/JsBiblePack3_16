@@ -1,9 +1,5 @@
 import "./styles/styles.css";
-
 import { NeedBible } from "./NeedBible";
-
-export let key = "";
-export let bibleVersion = ``;
 
 window.addEventListener("DOMContentLoaded", () => {
   const keySrc = document.querySelector("#key-src");
