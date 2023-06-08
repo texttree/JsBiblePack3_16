@@ -7,7 +7,7 @@ window.addEventListener("DOMContentLoaded", () => {
   const revSrc = document.querySelector("#rev-src");
   const contentSrc = document.querySelector("#content-src");
   const statusSrc = document.querySelector("#status-src");
-  if (keySrc.value === "") {
+  if (keySrc.value === "" && localStorage.apiKey !== undefined) {
     keySrc.value = localStorage.apiKey;
   }
 
