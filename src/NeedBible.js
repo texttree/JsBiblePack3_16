@@ -92,6 +92,7 @@ class NeedBible {
         }
       }
     }
+    this.progressStatus.showValue(this.needBooks.length);
   }
 
   async fillIntroContent(bibleVersion, chapterId) {
