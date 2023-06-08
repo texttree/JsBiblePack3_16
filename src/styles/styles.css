@@ -17,6 +17,8 @@ h1 {
   justify-content: center
 }
 
+
+
 select {
   width: 100%;
   border: 2px solid #aaa;
@@ -74,4 +76,16 @@ input[type=text]:focus {
 
 .status {
   background-color: #b6cfe4;
+}
+
+
+@media (max-width: 480px) {
+  .input-data {
+    display: inline;
+  }
+
+  .download,
+  .label {
+    width: 100%;
+  }
 }
