@@ -8,6 +8,7 @@ class NeedBible {
   constructor(apiKey, bibleVersion, typeContent, statusSrc) {
     this.initStartRange = false;
     this.needBooks = [];
+    this.allBooks = [];
     this.contentArray = [];
     this.scriptureSite = new ScriptureSite(apiKey, statusSrc);
     this.countVerse = 0;
@@ -16,17 +17,24 @@ class NeedBible {
     this.progressStatus = new ProgressStatus(statusSrc);
   }
 
-  fillNeedBooks() {
+  async fillAllBooks() {
+    const data = await this.scriptureSite.getAllBooks(this.bibleVersion);
+    data.forEach((element) => this.allBooks.push(element.id));
+  }
+
+  async fillNeedBooks() {
     const globalBible = new GlobalBible();
     globalBible.getAllChapters().forEach(function (element) {
-      if (globalBible.getAllBooks().includes(element.bookId)) {
+      if (this.allBooks.includes(element.bookId)) {
         this.needBooks.push(element);
       }
     }, this);
-    this.progressStatus.setAllValue(this.needBooks.length - 1);
+
+    this.progressStatus.setAllValue(this.needBooks.length);
   }
   async fillGlobal() {
     let keeper = new Keeper();
+    await this.fillAllBooks();
     this.fillNeedBooks();
     await this.fillContent().then(() =>
       keeper.save(this.contentArray, this.bibleVersion)
@@ -36,15 +44,16 @@ class NeedBible {
   async fillContent() {
     let startRange = "123";
     let finishRange = "321";
+
     //учитываем запрос на intro
     for (let index = 0; index < this.needBooks.length; index++) {
-      this.progressStatus.showValue();
+      this.progressStatus.showValue(index);
 
       let item = this.needBooks[index];
 
       //Формирование content начинаем с GEN.intro
       if (item.chapterId.includes("intro") & (index === 0)) {
-        await this.fillIntroContent(item.chapterId);
+        await this.fillIntroContent(this.bibleVersion, item.chapterId);
       } else {
         //Проверяем или был инициализирован стартовый адрес диапазона
         if (!this.initStartRange) {
@@ -85,12 +94,14 @@ class NeedBible {
     }
   }
 
-  async fillIntroContent(chapterId) {
-    const value = await this.scriptureSite.getAllVerses(chapterId);
-    console.log(value);
+  async fillIntroContent(bibleVersion, chapterId) {
+    const value = await this.scriptureSite.getAllVerses(
+      bibleVersion,
+      chapterId
+    );
     this.contentArray.push({
       chapterId: chapterId,
-      content: value.data.content,
+      content: value.content,
     });
   }
 
@@ -102,9 +113,8 @@ class NeedBible {
       range,
       this.typeContent
     );
-
-    const contentVerse = value.data.content;
-    const id = value.data.id;
+    const contentVerse = value.content;
+    const id = value.id;
     this.contentArray.push({
       chapterId: id,
       content: contentVerse,

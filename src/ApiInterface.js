@@ -13,18 +13,15 @@ class ApiInterface {
         },
       });
       if (response.status === 200) {
-        console.log(161, response);
         const data = await response.json();
         return data;
       } else {
-        console.log(20, response);
-        throw new Error(response);
+        throw Error(
+          `STATUS: code:${response.status}, statusText:${response.statusText}`
+        );
       }
     } catch (error) {
-      console.log(24, response);
-      console.log(25, error);
-
-      throw new Error(error);
+      throw error;
     }
   }
 }
