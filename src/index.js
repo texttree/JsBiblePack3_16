@@ -7,16 +7,19 @@ window.addEventListener("DOMContentLoaded", () => {
   const revSrc = document.querySelector("#rev-src");
   const contentSrc = document.querySelector("#content-src");
   const statusSrc = document.querySelector("#status-src");
+  if (keySrc.value === "") {
+    keySrc.value = localStorage.apiKey;
+  }
 
   const download = document.querySelector(".download");
   download.addEventListener("click", function () {
-    const key = keySrc.value;
     const paid = paiSrc.value;
     const revision = revSrc.value;
     const typeContent = contentSrc.value;
     const bibleVersion = `${paid}-${revision}`;
+    localStorage.apiKey = keySrc.value;
 
-    const needBible = new NeedBible(key, bibleVersion, typeContent, statusSrc);
+    const needBible = new NeedBible(bibleVersion, typeContent, statusSrc);
     needBible.fillGlobal();
   });
 });

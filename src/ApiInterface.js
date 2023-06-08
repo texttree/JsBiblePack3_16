@@ -1,7 +1,5 @@
 class ApiInterface {
-  constructor(apiKey) {
-    this.apiKey = apiKey;
-  }
+  constructor() {}
 
   async get(url) {
     try {
@@ -9,7 +7,7 @@ class ApiInterface {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          "API-Key": this.apiKey,
+          "API-Key": localStorage.apiKey,
         },
       });
       if (response.status === 200) {

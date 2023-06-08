@@ -5,12 +5,12 @@ import { ScriptureSite } from "./ScriptureSite";
 import { GlobalBible } from "./GlobalBible";
 
 class NeedBible {
-  constructor(apiKey, bibleVersion, typeContent, statusSrc) {
+  constructor(bibleVersion, typeContent, statusSrc) {
     this.initStartRange = false;
     this.needBooks = [];
     this.allBooks = [];
     this.contentArray = [];
-    this.scriptureSite = new ScriptureSite(apiKey, statusSrc);
+    this.scriptureSite = new ScriptureSite(statusSrc);
     this.countVerse = 0;
     this.bibleVersion = bibleVersion;
     this.typeContent = typeContent;
@@ -52,7 +52,7 @@ class NeedBible {
       let item = this.needBooks[index];
 
       //Формирование content начинаем с GEN.intro
-      if (item.chapterId.includes("intro") & (index === 0)) {
+      if (item.chapterId.includes("intro") && index === 0) {
         await this.fillIntroContent(this.bibleVersion, item.chapterId);
       } else {
         //Проверяем или был инициализирован стартовый адрес диапазона
