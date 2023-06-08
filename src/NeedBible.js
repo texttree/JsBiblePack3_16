@@ -108,13 +108,11 @@ class NeedBible {
   async fillChapterContent(startRange, finishRange) {
     this.initStartRange = false;
     const range = `${startRange}-${finishRange}`;
-    const value = await this.scriptureSite.getDataVerse(
+    const { id, content: contentVerse } = await this.scriptureSite.getDataVerse(
       this.bibleVersion,
       range,
       this.typeContent
     );
-    const contentVerse = value.content;
-    const id = value.id;
     this.contentArray.push({
       chapterId: id,
       content: contentVerse,
