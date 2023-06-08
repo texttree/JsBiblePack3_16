@@ -2,8 +2,8 @@ import { ApiInterface } from "./ApiInterface";
 import { ProgressStatus } from "./ProgressStatus";
 
 class ScriptureSite {
-  constructor(apiKey, statusSrc) {
-    this.apiInterface = new ApiInterface(apiKey);
+  constructor(statusSrc) {
+    this.apiInterface = new ApiInterface();
     this.progressStatus = new ProgressStatus(statusSrc);
   }
 
