@@ -52,7 +52,7 @@ class NeedBible {
       let item = this.needBooks[index];
 
       //Формирование content начинаем с GEN.intro
-      if (item.chapterId.includes("intro") & (index === 0)) {
+      if (item.chapterId.includes("intro") && index === 0) {
         await this.fillIntroContent(this.bibleVersion, item.chapterId);
       } else {
         //Проверяем или был инициализирован стартовый адрес диапазона
