@@ -16,7 +16,7 @@ class ScriptureSite {
     }
   }
   async getAllBooks(bibleVersion) {
-    const URL = `https://api.scripture.api.bible/v1/bibles/${bibleVersion}/books`;
+    const URL = `https://api.scripture.api.bible/v1/bibles/${bibleVersion}/books?include-chapters=true&include-chapters-and-sections=false`;
 
     const data = await this.getBasic(URL);
     return data.data;
