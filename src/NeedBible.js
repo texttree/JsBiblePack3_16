@@ -19,15 +19,22 @@ class NeedBible {
 
   async fillAllBooks() {
     const data = await this.scriptureSite.getAllBooks(this.bibleVersion);
-    data.forEach((element) => this.allBooks.push(element.id));
+    data.forEach(function (element) {
+      element.chapters.forEach((el) => {
+        this.allBooks.push(el.id);
+      }, this);
+    }, this);
   }
 
   async fillNeedBooks() {
     const globalBible = new GlobalBible();
-    globalBible.getAllChapters().forEach(function (element) {
-      if (this.allBooks.includes(element.bookId)) {
-        this.needBooks.push(element);
-      }
+
+    this.allBooks.forEach(function (el) {
+      globalBible.getAllChapters().forEach(function (element) {
+        if (element.chapterId === el) {
+          this.needBooks.push(element);
+        }
+      }, this);
     }, this);
 
     this.progressStatus.setAllValue(this.needBooks.length);
