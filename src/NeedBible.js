@@ -4,6 +4,7 @@ import { ProgressStatus } from "./ProgressStatus";
 import { ScriptureSite } from "./ScriptureSite";
 import { GlobalBible } from "./GlobalBible";
 
+import { html2json } from "html2json";
 class NeedBible {
   constructor(bibleVersion, typeContent, statusSrc) {
     this.initStartRange = false;
@@ -78,7 +79,7 @@ class NeedBible {
           index--;
           item = this.needBooks[index];
 
-          if (item.chapterId.includes("intro")) {
+          while (item.chapterId.includes("intro")) {
             index -= 2;
             item = this.needBooks[index];
           }
@@ -107,10 +108,35 @@ class NeedBible {
       bibleVersion,
       chapterId
     );
-    this.contentArray.push({
-      chapterId: chapterId,
-      content: value.content,
-    });
+
+    let content;
+    if (this.typeContent === "html") {
+      content = value.content;
+      this.contentArray.push({
+        chapterId: chapterId,
+        content: content,
+      });
+    } else if (this.typeContent === "json") {
+      let objTemp = html2json(value.content);
+
+      let arrayTemp = [];
+
+      objTemp.child.forEach(function (element) {
+        arrayTemp.push({
+          name: "para",
+          type: "tag",
+          attrs: { style: element.attr.class },
+          items: [{ text: element.child[0].text, type: element.child[0].node }],
+        });
+      });
+      this.contentArray.push({
+        chapterId: chapterId,
+        content: arrayTemp,
+      });
+    } else {
+      content = value.content.replace(/(<([^>]+)>)/gi, " ");
+      this.contentArray.push(content);
+    }
   }
 
   async fillChapterContent(startRange, finishRange) {
