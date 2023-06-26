@@ -29,5 +29,8 @@
   "bugs": {
     "url": "https://github.com/tt-dev-23/JsBiblePack/issues"
   },
-  "homepage": "https://github.com/tt-dev-23/JsBiblePack#readme"
+  "homepage": "https://github.com/tt-dev-23/JsBiblePack#readme",
+  "dependencies": {
+    "html2json": "^1.0.2"
+  }
 }
