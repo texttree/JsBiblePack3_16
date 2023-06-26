@@ -44,7 +44,7 @@ class NeedBible {
     await this.fillAllBooks();
     this.fillNeedBooks();
     await this.fillContent().then(() =>
-      keeper.save(this.contentArray, this.bibleVersion)
+      keeper.save(this.contentArray, this.bibleVersion, this.typeContent)
     );
   }
 
