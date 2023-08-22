@@ -16,6 +16,13 @@ class ScriptureSite {
       this.progressStatus.showError(error.message);
     }
   }
+
+  async getInfoBible(bibleVersion) {
+    const URL = `${this.urlSite}/bibles/${bibleVersion}`;
+    const data = await this.getBasic(URL);
+    return data.data;
+  }
+
   async getAllBooks(bibleVersion) {
     const URL = `${this.urlSite}/bibles/${bibleVersion}/books?include-chapters=true&include-chapters-and-sections=false`;
 
