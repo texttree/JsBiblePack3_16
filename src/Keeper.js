@@ -1,5 +1,6 @@
 class Keeper {
   constructor() {}
+
   save(arrayData, nameFile, typeContent) {
     let text = "";
     let typeMime = "text/plain";
@@ -10,13 +11,13 @@ class Keeper {
         break;
       case "json":
         typeMime = "application/json";
+        text = JSON.stringify(arrayData, null, 2);
         break;
       default:
         typeContent = "txt";
+        arrayData.forEach((element) => (text += JSON.stringify(element)));
         break;
     }
-
-    arrayData.forEach((element) => (text += JSON.stringify(element)));
 
     let blob = new Blob([text], { type: typeMime });
     let link = document.createElement("a");
@@ -25,5 +26,4 @@ class Keeper {
     link.click();
   }
 }
-
 export { Keeper };
