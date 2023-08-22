@@ -19,6 +19,32 @@ class NeedBible {
     this.progressStatus = new ProgressStatus(statusSrc);
   }
 
+  async  getInfoBibleObject() {
+    const {
+      name,
+      nameLocal,
+      abbreviation,
+      language,
+      copyright
+    } = await this.scriptureSite.getInfoBible(this.bibleVersion);
+  
+    return {
+      languageEnglish: language.name,
+      languageOriginal: language.nameLocal,
+      languageVariants: `${language.id}, ${language.name}, ${language.nameLocal}`,
+      verse: "verse", 
+      owner: "", 
+      refOwner: "", 
+      license: copyright,
+      refLicense: "", 
+      nameTranslate: name,
+      nameTranslateAlternative: nameLocal,
+      shortNameTranslate: abbreviation,
+      refNameTranslate: "",
+      openSourse: false 
+    };
+  }
+
   async fillAllBooks() {
     const data = await this.scriptureSite.getAllBooks(this.bibleVersion);
     data.forEach(function (element) {
@@ -39,15 +65,28 @@ class NeedBible {
       }, this);
     }, this);
 
-    this.progressStatus.setAllValue(this.needBooks.length);
+    this.progressStatus.setAllValue(100);
   }
   async fillGlobal() {
     let keeper = new Keeper();
     await this.fillAllBooks();
     this.fillNeedBooks();
-    await this.fillContent().then(() =>
-      keeper.save(this.contentArray, this.bibleVersion, this.typeContent)
-    );
+    const infoBibleObject=  await this.getInfoBibleObject();
+    await this.fillContent3_16();
+    console.log(this.contentArray);
+    // const textItems = this.contentArray[0].content[0].items.filter(item => item.type === "tag" && item.name === "char");
+    // const extractedText = textItems.map(item => item.items[0].text).join(" ");
+    const extractedText = extractTextFromObject(this.contentArray[0].content[0]);
+    infoBibleObject.verse = extractedText
+    console.log(infoBibleObject);
+    keeper.save(infoBibleObject, this.bibleVersion, this.typeContent);
+  }
+
+  async fillContent3_16() {
+    let startRange = "JHN.3.16";
+    let finishRange = "JHN.3.16";
+   await this.fillChapterContent(startRange, finishRange);
+      this.progressStatus.showValue(100);
   }
 
   async fillContent() {
@@ -159,3 +198,17 @@ class NeedBible {
 }
 
 export { NeedBible };
+
+
+function extractTextFromObject(obj) {
+  let result = "";
+  if (obj.hasOwnProperty("text")) {
+    result += obj.text;
+  }
+  if (obj.hasOwnProperty("items") && Array.isArray(obj.items)) {
+    for (const item of obj.items) {
+      result += extractTextFromObject(item);
+    }
+  }
+  return result;
+}
