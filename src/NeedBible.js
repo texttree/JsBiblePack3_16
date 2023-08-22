@@ -73,9 +73,6 @@ class NeedBible {
     this.fillNeedBooks();
     const infoBibleObject=  await this.getInfoBibleObject();
     await this.fillContent3_16();
-    console.log(this.contentArray);
-    // const textItems = this.contentArray[0].content[0].items.filter(item => item.type === "tag" && item.name === "char");
-    // const extractedText = textItems.map(item => item.items[0].text).join(" ");
     const extractedText = extractTextFromObject(this.contentArray[0].content[0]);
     infoBibleObject.verse = extractedText
     console.log(infoBibleObject);
